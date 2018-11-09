@@ -30,9 +30,47 @@ function getSmoker() {
 }
 
 function getAdd() {
-  return document.querySelector(".add");
+  return (addButton = document.querySelector(".add"));
 }
 
 function getSubmit() {
-  return document.querySelector('button[type="submit"');
+  return (submitButton = document.querySelector('button[type="submit"'));
 }
+
+function getForm() {
+  return document.querySelector("form");
+}
+
+// EVENT HANDLERS
+
+function handleAddPerson(e) {
+  e.preventDefault();
+  console.log("add person called");
+}
+
+function handleSubmitHousehold(e) {
+  e.preventDefault();
+  console.log("submit household called");
+}
+
+// LISTENERS
+
+function addPersonListenerClick() {
+  return getAdd().addEventListener("click", handleAddPerson);
+}
+
+function addPersonListenerKeyup() {
+  return getAdd().addEventListener("keyup", handleAddPerson);
+}
+
+function addSubmitListener() {
+  return getForm().addEventListener("submit", handleSubmitHousehold);
+}
+
+function addListeners() {
+  addPersonListenerClick();
+  addPersonListenerKeyup();
+  addSubmitListener();
+}
+
+addListeners();
