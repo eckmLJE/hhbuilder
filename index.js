@@ -7,15 +7,14 @@
 // console.log("index loaded");
 
 var store = {
-  personBuilder: {
-    relationship: "",
-    age: null,
-    smoker: false
-  },
   household: []
 };
 
 // SELECTORS
+
+function getForm() {
+  return document.querySelector("form");
+}
 
 function getAge() {
   return document.querySelector('input[name="age"]');
@@ -33,19 +32,11 @@ function getAdd() {
   return (addButton = document.querySelector(".add"));
 }
 
-function getSubmit() {
-  return (submitButton = document.querySelector('button[type="submit"'));
-}
-
-function getForm() {
-  return document.querySelector("form");
-}
-
 // EVENT HANDLERS
 
 function handleAddPerson(e) {
   e.preventDefault();
-  console.log("add person called");
+  addPersonToHousehold();
 }
 
 function handleSubmitHousehold(e) {
@@ -72,5 +63,44 @@ function addListeners() {
   addPersonListenerKeyup();
   addSubmitListener();
 }
+
+// APP
+
+function addPersonToHousehold() {
+  var validation = validatePerson();
+  return validation.constructor === Array
+    ? console.log("errors", validation)
+    : console.log("person", validation);
+}
+
+function buildPerson() {
+  var age = getAge().value;
+  var relationship = getRelationship().value;
+  var smoker = getSmoker().value;
+  return {
+    age: parseInt(age, 10),
+    relationship: relationship,
+    smoker: smokerBool(smoker)
+  };
+}
+
+function validatePerson() {
+  var errors = [];
+  var person = buildPerson();
+  if (person.age <= 0 || person.age === NaN) {
+    errors.push("Age must be a number greater than 0");
+  }
+  if (person.relationship === "") {
+    errors.push("Please select relationship");
+  }
+  console.log(errors);
+  return errors.length ? errors : person;
+}
+
+function smokerBool(value) {
+  return value === "on" ? true : false;
+}
+
+// LOAD
 
 addListeners();
