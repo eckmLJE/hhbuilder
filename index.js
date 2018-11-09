@@ -78,7 +78,7 @@ function buildPerson() {
   var relationship = getRelationship().value;
   var smoker = getSmoker().value;
   return {
-    age: parseInt(age, 10),
+    age: parseFloat(age),
     relationship: relationship,
     smoker: smokerBool(smoker)
   };
@@ -87,13 +87,12 @@ function buildPerson() {
 function validatePerson() {
   var errors = [];
   var person = buildPerson();
-  if (person.age <= 0 || person.age === NaN) {
+  if (person.age <= 0 || isNaN(person.age)) {
     errors.push("Age must be a number greater than 0");
   }
   if (person.relationship === "") {
     errors.push("Please select relationship");
   }
-  console.log(errors);
   return errors.length ? errors : person;
 }
 
