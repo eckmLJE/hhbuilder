@@ -42,6 +42,14 @@ function handleAddPerson(e) {
   processPerson();
 }
 
+function handleRemovePerson(e) {
+  e.preventDefault();
+  if (e.target.name === "remove-person-button") {
+    var personId = e.target.dataset.id;
+    removePersonById(personId);
+  }
+}
+
 function handleSubmitHousehold(e) {
   e.preventDefault();
   console.log("submit household called");
@@ -57,9 +65,14 @@ function addSubmitListener() {
   return getForm().addEventListener("submit", handleSubmitHousehold);
 }
 
+function addHouseholdListListener() {
+  return getHouseholdList().addEventListener("click", handleRemovePerson);
+}
+
 function addListeners() {
   addPersonListener();
   addSubmitListener();
+  addHouseholdListListener();
 }
 
 // APP
@@ -75,10 +88,12 @@ function renderHousehold() {
 function renderPersonLi(person) {
   return `<li>Relationship: ${person.relationship} | Age: ${
     person.age
-  } | Smoker: ${person.smoker}</li>`;
+  } | Smoker: ${person.smoker} <button name="remove-person-button" data-id=${
+    person.id
+  }>Remove Person</button></li>`;
 }
 
-// ADD + REMOVE PEOPLE
+// ADD PEOPLE
 
 function processPerson() {
   var validation = validatePerson();
@@ -126,6 +141,16 @@ function buildPerson() {
 
 function smokerBool(value) {
   return value === "on" ? true : false;
+}
+
+// REMOVE PEOPLE
+
+function removePersonById(id) {
+  store.household = store.household.filter(function(obj) {
+    return obj.id != id;
+  });
+  renderHousehold();
+  console.log(store.household);
 }
 
 // LOAD
