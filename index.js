@@ -31,6 +31,10 @@ function getAdd() {
   return document.querySelector('button[class="add"]');
 }
 
+function getHouseholdList() {
+  return document.querySelector('ol[class="household"]');
+}
+
 // EVENT HANDLERS
 
 function handleAddPerson(e) {
@@ -45,12 +49,8 @@ function handleSubmitHousehold(e) {
 
 // LISTENERS
 
-function addPersonListenerClick() {
+function addPersonListener() {
   return getAdd().addEventListener("click", handleAddPerson);
-}
-
-function addPersonListenerKeyup() {
-  return getAdd().addEventListener("keyup", handleAddPerson);
 }
 
 function addSubmitListener() {
@@ -58,12 +58,27 @@ function addSubmitListener() {
 }
 
 function addListeners() {
-  addPersonListenerClick();
-  addPersonListenerKeyup();
+  addPersonListener();
   addSubmitListener();
 }
 
 // APP
+
+function renderHousehold() {
+  var householdList = getHouseholdList();
+  householdList.innerHTML = "";
+  store.household.forEach(function(person) {
+    return (householdList.innerHTML += renderPersonLi(person));
+  });
+}
+
+function renderPersonLi(person) {
+  return `<li>Relationship: ${person.relationship} | Age: ${
+    person.age
+  } | Smoker: ${person.smoker}</li>`;
+}
+
+// ADD + REMOVE PEOPLE
 
 function processPerson() {
   var validation = validatePerson();
@@ -77,6 +92,7 @@ function addPersonToHousehold(person) {
   emptyForm();
   store.household.push(person);
   console.log(store.household);
+  renderHousehold();
 }
 
 function emptyForm() {
