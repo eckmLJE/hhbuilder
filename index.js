@@ -4,8 +4,9 @@
 // Display the household list in the HTML as it is modified
 // Serialize the household as JSON upon form submission as a fake trip to the server
 
+var idCounter = 0;
+
 var store = {
-  idCounter: 0,
   household: []
 };
 
@@ -35,24 +36,8 @@ function getHouseholdList() {
   return document.querySelector('ol[class="household"]');
 }
 
-// EVENT HANDLERS
-
-function handleAddPerson(e) {
-  e.preventDefault();
-  processPerson();
-}
-
-function handleRemovePerson(e) {
-  e.preventDefault();
-  if (e.target.name === "remove-person-button") {
-    var personId = e.target.dataset.id;
-    removePersonById(personId);
-  }
-}
-
-function handleSubmitHousehold(e) {
-  e.preventDefault();
-  console.log("submit household called");
+function getDebug() {
+  return document.querySelector('pre[class="debug"]');
 }
 
 // LISTENERS
@@ -73,6 +58,26 @@ function addListeners() {
   addPersonListener();
   addSubmitListener();
   addHouseholdListListener();
+}
+
+// EVENT HANDLERS
+
+function handleAddPerson(e) {
+  e.preventDefault();
+  processPerson();
+}
+
+function handleRemovePerson(e) {
+  e.preventDefault();
+  if (e.target.name === "remove-person-button") {
+    var personId = e.target.dataset.id;
+    removePersonById(personId);
+  }
+}
+
+function handleSubmitHousehold(e) {
+  e.preventDefault();
+  submitHouseholdAsJSON();
 }
 
 // APP
@@ -103,7 +108,7 @@ function processPerson() {
 }
 
 function addPersonToHousehold(person) {
-  person.id = ++store.idCounter;
+  person.id = ++idCounter;
   emptyForm();
   store.household.push(person);
   console.log(store.household);
@@ -151,6 +156,13 @@ function removePersonById(id) {
   });
   renderHousehold();
   console.log(store.household);
+}
+
+// SUBMIT
+
+function submitHouseholdAsJSON() {
+  var householdJSON = JSON.stringify(store);
+  getDebug().innerHTML = householdJSON;
 }
 
 // LOAD
