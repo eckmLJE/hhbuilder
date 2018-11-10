@@ -4,9 +4,8 @@
 // Display the household list in the HTML as it is modified
 // Serialize the household as JSON upon form submission as a fake trip to the server
 
-// console.log("index loaded");
-
 var store = {
+  idCounter: 0,
   household: []
 };
 
@@ -29,14 +28,14 @@ function getSmoker() {
 }
 
 function getAdd() {
-  return (addButton = document.querySelector(".add"));
+  return document.querySelector('button[class="add"]');
 }
 
 // EVENT HANDLERS
 
 function handleAddPerson(e) {
   e.preventDefault();
-  addPersonToHousehold();
+  processPerson();
 }
 
 function handleSubmitHousehold(e) {
@@ -66,22 +65,24 @@ function addListeners() {
 
 // APP
 
-function addPersonToHousehold() {
+function processPerson() {
   var validation = validatePerson();
   return validation.constructor === Array
     ? console.log("errors", validation)
-    : console.log("person", validation);
+    : addPersonToHousehold(validation);
 }
 
-function buildPerson() {
-  var age = getAge().value;
-  var relationship = getRelationship().value;
-  var smoker = getSmoker().value;
-  return {
-    age: parseFloat(age),
-    relationship: relationship,
-    smoker: smokerBool(smoker)
-  };
+function addPersonToHousehold(person) {
+  person.id = ++store.idCounter;
+  emptyForm();
+  store.household.push(person);
+  console.log(store.household);
+}
+
+function emptyForm() {
+  getAge().value = "";
+  getRelationship().value = "";
+  getSmoker().checked = false;
 }
 
 function validatePerson() {
@@ -94,6 +95,17 @@ function validatePerson() {
     errors.push("Please select relationship");
   }
   return errors.length ? errors : person;
+}
+
+function buildPerson() {
+  var age = getAge().value;
+  var relationship = getRelationship().value;
+  var smoker = getSmoker().value;
+  return {
+    age: parseFloat(age),
+    relationship: relationship,
+    smoker: smokerBool(smoker)
+  };
 }
 
 function smokerBool(value) {
