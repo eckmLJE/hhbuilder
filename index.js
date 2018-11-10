@@ -162,7 +162,9 @@ function removePersonById(id) {
 
 function submitHouseholdAsJSON() {
   var householdJSON = JSON.stringify(store);
-  getDebug().innerHTML = householdJSON;
+  var debug = getDebug();
+  debug.innerText = householdJSON;
+  debug.style.display = "block";
 }
 
 // LOAD
