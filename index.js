@@ -1,11 +1,7 @@
-// Validate data entry (age is required and > 0, relationship is required)
-// Add people to a growing household list
-// Remove a previously added person from the list
-// Display the household list in the HTML as it is modified
-// Serialize the household as JSON upon form submission as a fake trip to the server
-
+// Initialize IDs for household members
 var idCounter = 0;
 
+// Household member array stored in this object as single source of truth
 var store = {
   household: []
 };
@@ -90,6 +86,15 @@ function handleSubmitHousehold(e) {
 
 // APP
 
+// Each time a household member is added or removed,
+// the entire list re-renders from the household store.
+
+// It's an easy way to keep the rendered list in sync with our store.
+
+// The performance hit of re-rendering is minimal,
+// as we are dealing with a small dataset
+// and the content being rendered is simple text.
+
 function renderHousehold() {
   var householdList = getHouseholdList();
   householdList.innerHTML = "";
@@ -106,6 +111,17 @@ function renderPersonLi(person) {
   }>Remove Person</button></li>`;
 }
 
+// Add unordered list element after form for listing errors later
+// Styling helps user understand and see these errors
+function addErrorList() {
+  var errorList = document.createElement("ul");
+  errorList.className = "errors";
+  errorList.style.color = "red";
+  errorList.style.fontSize = "1.2em";
+  var form = getForm();
+  form.parentNode.insertBefore(errorList, form.nextSibling);
+}
+
 function renderErrors(errors) {
   var errorList = getErrorList();
   errorList.innerHTML = "";
@@ -114,19 +130,16 @@ function renderErrors(errors) {
   });
 }
 
+// Change age input type to number to make validation easier and UX more obvious.
 function setAgeInputType() {
   getAge().type = "number";
 }
 
-function addErrorList() {
-  var errorList = document.createElement("ul");
-  errorList.className = "errors";
-  errorList.style.color = "red";
-  var builderDiv = getBuilderDiv();
-  builderDiv.parentNode.insertBefore(errorList, builderDiv.nextSibling);
-}
-
 // ADD PEOPLE
+
+// The validatePerson function returns either an array of errors
+// or a person object. Depending on this outcome, processPerson will
+// call error rendering or add the person to the household and display them.
 
 function processPerson() {
   var validation = validatePerson();
@@ -135,12 +148,13 @@ function processPerson() {
     : addPersonToHousehold(validation);
 }
 
+// Once person is validated, they are assigned an id and added to store.
+// The household list is then re-rendered from the store.
 function addPersonToHousehold(person) {
   person.id = ++idCounter;
   emptyForm();
   clearErrors();
   store.household.push(person);
-  console.log(store.household);
   renderHousehold();
 }
 
@@ -154,10 +168,13 @@ function emptyForm() {
   getSmoker().checked = false;
 }
 
+// Simple validations here for age and relationship.
+// If there are any errors, the array of errors is returned.
+// If there are no errors in validation, the person object is returned
 function validatePerson() {
   var errors = [];
   var person = buildPerson();
-  if (person.age <= 0 || isNaN(person.age)) {
+  if (person.age <= 0) {
     errors.push("Age must be a number greater than 0");
   }
   if (person.relationship === "") {
@@ -171,7 +188,7 @@ function buildPerson() {
   var relationship = getRelationship().value;
   var smoker = getSmoker().checked;
   return {
-    age: parseFloat(age),
+    age: age,
     relationship: relationship,
     smoker: smoker
   };
@@ -184,7 +201,6 @@ function removePersonById(id) {
     return obj.id != id;
   });
   renderHousehold();
-  console.log(store.household);
 }
 
 // SUBMIT
@@ -197,6 +213,9 @@ function submitHouseholdAsJSON() {
 }
 
 // LOAD
+
+// Would place this in DOMContentLoaded
+// if index.js was called at beginning of HTML document.
 
 addListeners();
 setAgeInputType();
