@@ -40,6 +40,14 @@ function getDebug() {
   return document.querySelector('pre[class="debug"]');
 }
 
+function getBuilderDiv() {
+  return document.querySelector('div[class="builder"]');
+}
+
+function getErrorList() {
+  return document.querySelector('ul[class="errors"]');
+}
+
 // LISTENERS
 
 function addPersonListener() {
@@ -98,21 +106,46 @@ function renderPersonLi(person) {
   }>Remove Person</button></li>`;
 }
 
+function renderErrors(errors) {
+  var errorList = getErrorList();
+  errorList.innerHTML = "";
+  errors.forEach(function(error) {
+    return (errorList.innerHTML += `<li>${error}</li>`);
+  });
+}
+
+function setAgeInputType() {
+  getAge().type = "number";
+}
+
+function addErrorList() {
+  var errorList = document.createElement("ul");
+  errorList.className = "errors";
+  errorList.style.color = "red";
+  var builderDiv = getBuilderDiv();
+  builderDiv.parentNode.insertBefore(errorList, builderDiv.nextSibling);
+}
+
 // ADD PEOPLE
 
 function processPerson() {
   var validation = validatePerson();
   return validation.constructor === Array
-    ? console.log("errors", validation)
+    ? renderErrors(validation)
     : addPersonToHousehold(validation);
 }
 
 function addPersonToHousehold(person) {
   person.id = ++idCounter;
   emptyForm();
+  clearErrors();
   store.household.push(person);
   console.log(store.household);
   renderHousehold();
+}
+
+function clearErrors() {
+  getErrorList().innerHTML = "";
 }
 
 function emptyForm() {
@@ -136,16 +169,12 @@ function validatePerson() {
 function buildPerson() {
   var age = getAge().value;
   var relationship = getRelationship().value;
-  var smoker = getSmoker().value;
+  var smoker = getSmoker().checked;
   return {
     age: parseFloat(age),
     relationship: relationship,
-    smoker: smokerBool(smoker)
+    smoker: smoker
   };
-}
-
-function smokerBool(value) {
-  return value === "on" ? true : false;
 }
 
 // REMOVE PEOPLE
@@ -170,3 +199,5 @@ function submitHouseholdAsJSON() {
 // LOAD
 
 addListeners();
+setAgeInputType();
+addErrorList();
