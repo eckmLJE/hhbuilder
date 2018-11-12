@@ -36,10 +36,6 @@ function getDebug() {
   return document.querySelector('pre[class="debug"]');
 }
 
-function getBuilderDiv() {
-  return document.querySelector('div[class="builder"]');
-}
-
 function getErrorList() {
   return document.querySelector('ul[class="errors"]');
 }
@@ -103,12 +99,30 @@ function renderHousehold() {
   });
 }
 
+// Basic styling to display household members.
+// The provided HTML document does not allow for responsive design,
+// e.g. meta viewport, scaling
+
+const personSpanStyle = "float:left;width:120px";
+
 function renderPersonLi(person) {
-  return `<li>Relationship: ${person.relationship} | Age: ${
+  return `<li style="width: 460px;"><span style=${personSpanStyle}><strong>${capitalizeFirstLetter(
+    person.relationship
+  )}</strong></span><span style=${personSpanStyle}>Age: ${
     person.age
-  } | Smoker: ${person.smoker} <button name="remove-person-button" data-id=${
+  }</span><span style=${personSpanStyle}>${smokerBool(
+    person.smoker
+  )}</span><span style="width:100px"><button name="remove-person-button" data-id=${
     person.id
-  }>Remove Person</button></li>`;
+  }>Remove</button></span></li>`;
+}
+
+function smokerBool(smoker) {
+  return smoker ? "Smoker" : "Non-Smoker";
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 // Add unordered list element after form for listing errors later
@@ -150,12 +164,14 @@ function processPerson() {
 
 // Once person is validated, they are assigned an id and added to store.
 // The household list is then re-rendered from the store.
+// Return focus to first input (age) for ease of person entry.
 function addPersonToHousehold(person) {
   person.id = ++idCounter;
   emptyForm();
   clearErrors();
   store.household.push(person);
   renderHousehold();
+  getAge().focus();
 }
 
 function clearErrors() {
@@ -220,3 +236,61 @@ function submitHouseholdAsJSON() {
 addListeners();
 setAgeInputType();
 addErrorList();
+
+// STYLING
+
+// function getBuilderDiv() {
+//   return document.querySelector('div[class="builder"]');
+// }
+
+// function getStyleButton() {
+//   return document.querySelector('button[class="style"]');
+// }
+
+// function getHouseholdListItems() {
+//   return document.querySelectorAll(".household li");
+// }
+
+// function getListSpans() {
+//   return document.querySelectorAll(".household span");
+// }
+
+// function addStyleButton() {
+//   var styleButton = document.createElement("button");
+//   styleButton.innerHTML = "Add Styling";
+//   styleButton.className = "style";
+//   var builderDiv = getBuilderDiv();
+//   builderDiv.parentNode.insertBefore(styleButton, builderDiv.nextSibling);
+// }
+
+// function addStyleListener() {
+//   getStyleButton().addEventListener("click", handleStyleClick);
+// }
+
+// function handleStyleClick(e) {
+//   e.preventDefault();
+//   applyStyles();
+//   getHouseholdListItems();
+// }
+
+// function applyStyles() {
+//   var householdList = getHouseholdList();
+//   var householdListItems = getHouseholdListItems();
+//   var householdListSpans = getListSpans();
+//   householdList.style.cssText = hhOlStyle;
+//   householdListItems.forEach(function(li) {
+//     li.style.cssText = hhLiStyle;
+//     console.log(li.style.cssText);
+//   });
+//   householdListSpans.forEach(function(span) {
+//     span.style.cssText = hhSpanStyle;
+//   });
+// }
+
+// const hhOlStyle =
+//   "position: relative; width: 100%; border: 1px solid black; padding:10px; list-style-position:inside; max-width:500px";
+// const hhLiStyle = "position:relative;width:100%;padding:5px;";
+// const hhSpanStyle = "display:inline-block;position:relative;";
+
+// addStyleButton();
+// addStyleListener();
