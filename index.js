@@ -84,6 +84,11 @@ var store = {
   household: []
 };
 
+// Change age input type to number to make validation easier and UX more obvious.
+function setAgeInputType() {
+  getAge().type = "number";
+}
+
 // Each time a household member is added or removed,
 // the household list re-renders from the household store.
 
@@ -102,10 +107,13 @@ function renderHousehold() {
   });
 }
 
-// Basic styling to: 
+// Basic styling to:
 //  Display household member data in columns for readability
 //  Capitalize relationship term
 //  Show Smoker/Non-Smoker instead of true/false
+
+// Set data-id attribute of button to the hhId value of the person,
+// which is used later to remove the person from the household
 
 function renderPersonLi(person) {
   return (
@@ -146,11 +154,6 @@ function renderErrors(errors) {
   });
 }
 
-// Change age input type to number to make validation easier and UX more obvious.
-function setAgeInputType() {
-  getAge().type = "number";
-}
-
 // ADD PEOPLE
 
 // The validatePerson function returns either an array of errors
@@ -164,34 +167,15 @@ function processPerson() {
     : addPersonToHousehold(validation);
 }
 
-// Once person is validated, they are assigned an id and added to store.
-// The household list is then re-rendered from the store.
-// Return focus to first input (age) for ease of person entry.
-function addPersonToHousehold(person) {
-  person.hhId = ++idCounter;
-  emptyForm();
-  clearErrors();
-  store.household.push(person);
-  renderHousehold();
-  getAge().focus();
-}
-
-function clearErrors() {
-  getErrorList().innerHTML = "";
-}
-
-function emptyForm() {
-  getAge().value = "";
-  getRelationship().value = "";
-  getSmoker().checked = false;
-}
-
 // Simple validations here for age > 0 and existence of relationship only.
+// Age validation allows for decimal, e.g. children less than 1 year old
+
 // Per instructions, there is no validation for anything else,
 // e.g. more than one self, unrealistic age, quantity of parents, etc.
 
 // If there are any errors, the array of errors is returned.
 // If there are no errors in validation, the person object is returned
+
 function validatePerson() {
   var errors = [];
   var person = buildPerson();
@@ -213,6 +197,28 @@ function buildPerson() {
     relationship: relationship,
     smoker: smoker
   };
+}
+
+// Once person is validated, they are assigned an id and added to store.
+// The household list is then re-rendered from the store.
+// focus() Sets focus to first input (age) for ease of entering additional people.
+function addPersonToHousehold(person) {
+  person.hhId = ++idCounter;
+  emptyForm();
+  clearErrors();
+  store.household.push(person);
+  renderHousehold();
+  getAge().focus();
+}
+
+function clearErrors() {
+  getErrorList().innerHTML = "";
+}
+
+function emptyForm() {
+  getAge().value = "";
+  getRelationship().value = "";
+  getSmoker().checked = false;
 }
 
 // REMOVE PEOPLE
@@ -237,9 +243,6 @@ function submitHouseholdAsJSON() {
 }
 
 // LOAD
-
-// Would place this in DOMContentLoaded
-// if index.js was called at beginning of HTML document.
 
 addListeners();
 setAgeInputType();
