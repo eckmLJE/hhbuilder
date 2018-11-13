@@ -1,13 +1,3 @@
-// Initialize IDs for household members
-var idCounter = 0;
-
-// Household member array stored in this object as single source of truth,
-// and to be used later for serializing household as JSON
-var store = {
-  submissionNumber: 0,
-  household: []
-};
-
 // SELECTORS
 
 function getForm() {
@@ -84,13 +74,23 @@ function handleSubmitHousehold(e) {
 
 // APP
 
+// Initialize id counter for household members
+var idCounter = 0;
+
+// Household member array stored in this object as single source of truth,
+// and to be used later for serializing household as JSON
+var store = {
+  submissionNumber: 0,
+  household: []
+};
+
 // Each time a household member is added or removed,
 // the household list re-renders from the household store.
 
 // It's an easy way to guarantee the rendered list
 // remains in sync with our store.
 
-// The performance hit of re-rendering is minimal,
+// The performance cost of re-rendering is minimal,
 // as we are dealing with a small dataset
 // and the content being rendered is simple text.
 
@@ -102,9 +102,10 @@ function renderHousehold() {
   });
 }
 
-// Basic styling to display household member data in columns.
-// The provided HTML document does not allow for responsive design,
-// e.g. meta viewport, scaling
+// Basic styling to: 
+//  Display household member data in columns for readability
+//  Capitalize relationship term
+//  Show Smoker/Non-Smoker instead of true/false
 
 function renderPersonLi(person) {
   return (
@@ -129,12 +130,10 @@ function capitalizeFirstLetter(string) {
 }
 
 // Add unordered list element after form for listing errors later
-// Styling helps user understand and see these errors
 function addErrorList() {
   var errorList = document.createElement("ul");
   errorList.className = "errors";
   errorList.style.color = "red";
-  errorList.style.fontSize = "1.2em";
   var form = getForm();
   form.parentNode.insertBefore(errorList, form.nextSibling);
 }
@@ -189,7 +188,7 @@ function emptyForm() {
 
 // Simple validations here for age > 0 and existence of relationship only.
 // Per instructions, there is no validation for anything else,
-// e.g. more than one self, unrealistic quantity of parents, etc.
+// e.g. more than one self, unrealistic age, quantity of parents, etc.
 
 // If there are any errors, the array of errors is returned.
 // If there are no errors in validation, the person object is returned
