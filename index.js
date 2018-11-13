@@ -104,16 +104,17 @@ function renderHousehold() {
 // e.g. meta viewport, scaling
 
 function renderPersonLi(person) {
-  var personSpanStyle = "float:left;width:120px";
-  return `<li style="width: 460px;"><span style=${personSpanStyle}><strong>${capitalizeFirstLetter(
-    person.relationship
-  )}</strong></span><span style=${personSpanStyle}>Age: ${
-    person.age
-  }</span><span style=${personSpanStyle}>${smokerBool(
-    person.smoker
-  )}</span><span style="width:100px"><button name="remove-person-button" data-id=${
-    person.id
-  }>Remove</button></span></li>`;
+  return (
+    "<li style='width: 460px;'><span style='float:left;width:120px'><strong>" +
+    capitalizeFirstLetter(person.relationship) +
+    "</strong></span><span style='float:left;width:120px'> Age:" +
+    person.age +
+    "</span><span style='float:left;width:120px'>" +
+    smokerBool(person.smoker) +
+    '</span><span style="width:100px"><button name="remove-person-button" data-id=' +
+    person.id +
+    ">Remove</button></span></li>"
+  );
 }
 
 function smokerBool(smoker) {
@@ -235,3 +236,4 @@ function submitHouseholdAsJSON() {
 addListeners();
 setAgeInputType();
 addErrorList();
+getAge().focus();
