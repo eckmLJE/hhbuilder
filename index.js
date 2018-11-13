@@ -1,8 +1,10 @@
 // Initialize IDs for household members
 var idCounter = 0;
 
-// Household member array stored in this object as single source of truth
+// Household member array stored in this object as single source of truth,
+// and to be used later for serializing household as JSON
 var store = {
+  submissionNumber: 0,
   household: []
 };
 
@@ -83,9 +85,10 @@ function handleSubmitHousehold(e) {
 // APP
 
 // Each time a household member is added or removed,
-// the entire list re-renders from the household store.
+// the household list re-renders from the household store.
 
-// It's an easy way to keep the rendered list in sync with our store.
+// It's an easy way to guarantee the rendered list
+// remains in sync with our store.
 
 // The performance hit of re-rendering is minimal,
 // as we are dealing with a small dataset
@@ -99,20 +102,20 @@ function renderHousehold() {
   });
 }
 
-// Basic styling to display household members.
+// Basic styling to display household member data in columns.
 // The provided HTML document does not allow for responsive design,
 // e.g. meta viewport, scaling
 
 function renderPersonLi(person) {
   return (
-    "<li style='width: 460px;'><span style='float:left;width:120px'><strong>" +
+    "<li style='width: 440px;'><span style='float:left;width:120px'><strong>" +
     capitalizeFirstLetter(person.relationship) +
-    "</strong></span><span style='float:left;width:120px'> Age:" +
+    "</strong></span><span style='float:left;width:100px'> Age: " +
     person.age +
     "</span><span style='float:left;width:120px'>" +
     smokerBool(person.smoker) +
     '</span><span style="width:100px"><button name="remove-person-button" data-id=' +
-    person.id +
+    person.hhId +
     ">Remove</button></span></li>"
   );
 }
@@ -166,7 +169,7 @@ function processPerson() {
 // The household list is then re-rendered from the store.
 // Return focus to first input (age) for ease of person entry.
 function addPersonToHousehold(person) {
-  person.id = ++idCounter;
+  person.hhId = ++idCounter;
   emptyForm();
   clearErrors();
   store.household.push(person);
@@ -184,7 +187,10 @@ function emptyForm() {
   getSmoker().checked = false;
 }
 
-// Simple validations here for age and relationship.
+// Simple validations here for age > 0 and existence of relationship only.
+// Per instructions, there is no validation for anything else,
+// e.g. more than one self, unrealistic quantity of parents, etc.
+
 // If there are any errors, the array of errors is returned.
 // If there are no errors in validation, the person object is returned
 function validatePerson() {
@@ -213,15 +219,18 @@ function buildPerson() {
 // REMOVE PEOPLE
 
 function removePersonById(id) {
-  store.household = store.household.filter(function(obj) {
-    return obj.id != id;
+  store.household = store.household.filter(function(person) {
+    return person.hhId != id;
   });
   renderHousehold();
 }
 
 // SUBMIT
 
+// Per instructions, Have not provided validation for an empty household
+// or for a household without 'self' relationship in it.
 function submitHouseholdAsJSON() {
+  store.submissionNumber++;
   var householdJSON = JSON.stringify(store);
   var debug = getDebug();
   debug.innerText = householdJSON;
